@@ -1,4 +1,4 @@
-.PHONY: help init status sync bump bump-all add-skill remove-skill check push pull foreach clean link unlink link-status
+.PHONY: help init status sync bump bump-all add-skill remove-skill check push pull foreach clean link unlink link-status lint
 
 # -------- config --------
 SHELL := /bin/bash
@@ -113,6 +113,9 @@ check: ## Sanity-check the catalog (no detached drift, README has entries)
 	done
 	@echo "→ working tree:"
 	@git status --short
+
+lint: ## Validate every SKILL.md YAML frontmatter (catches the bare-colon bug etc.)
+	@python3 scripts/lint-skills.py
 
 commit: ## Commit pending catalog changes (MSG=...)
 	@test -n "$(MSG)" || (echo "ERROR: MSG= is required"; exit 1)
