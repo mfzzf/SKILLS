@@ -36,14 +36,41 @@ Production-grade **Next.js 16** frontend build playbook pinned to the May 2026 s
 
 ---
 
+### Upstream — [anthropics/skills](./anthropics-skills) &nbsp;·&nbsp; [source](https://github.com/anthropics/skills)
+
+Anthropic's official skill collection, vendored as a submodule so we always have the canonical references at hand. The two we lean on most:
+
+#### [→ frontend-design](./anthropics-skills/skills/frontend-design)
+
+Create distinctive, production-grade frontend interfaces with high design quality. Generates creative, polished code that avoids generic AI aesthetics.
+
+**Triggers**: "build a web component / page / app", "design a landing page", "make this look better", "non-generic UI".
+
+#### [→ skill-creator](./anthropics-skills/skills/skill-creator)
+
+The meta-skill for authoring, improving, and evaluating other skills — drafts SKILL.md, runs evals (with/without baselines), launches an eval viewer, iterates with quantitative + qualitative feedback, then optimizes the description for triggering accuracy.
+
+**Triggers**: "create a new skill", "improve my skill", "run evals on a skill", "optimize a skill description".
+
+> Also available inside `anthropics-skills/skills/`: `claude-api`, `mcp-builder`, `webapp-testing`, `pdf`, `docx`, `xlsx`, `pptx`, `canvas-design`, `theme-factory`, and more — browse the directory and pull what you need.
+
+---
+
 ## Layout
 
 ```
 SKILLS/
 ├── README.md                # this file
+├── MAINTENANCE.md           # how to add / sync / bump
+├── Makefile                 # `make help`
 ├── .gitmodules              # submodule pins
 ├── go-backend-ddd/          # → mfzzf/go-ddd-skills @ main
-└── frontend-build-2026/     # → mfzzf/frontend-build-2026 @ main
+├── frontend-build-2026/     # → mfzzf/frontend-build-2026 @ main
+└── anthropics-skills/       # → anthropics/skills @ main (upstream Anthropic skills)
+    └── skills/
+        ├── frontend-design/
+        ├── skill-creator/
+        └── ...
 ```
 
 ## Updating a skill
