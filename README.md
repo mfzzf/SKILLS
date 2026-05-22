@@ -2,15 +2,121 @@
 
 A curated index of Claude / Cursor / Codex compatible skills I maintain. Each entry is a standalone repo and is wired in here as a git submodule, so a single `git clone --recursive` pulls every skill at the pinned commit.
 
+> Maintaining this catalog? See **[MAINTENANCE.md](./MAINTENANCE.md)** and run `make help`.
+
+---
+
+## Install on a new machine
+
+End-to-end: clone the catalog, then symlink every skill into both Claude Code and Codex so updates are realtime (no copy step).
+
+### 0. Prereqs
+
+- `git` ≥ 2.30
+- `make`
+- `gh` CLI (optional, only needed if you'll publish from this machine)
+- SSH key registered with GitHub *or* HTTPS auth working — pick one and stay consistent
+
+Sanity check:
+
 ```bash
-git clone --recursive git@github.com:mfzzf/SKILLS.git
-# or, on an existing clone
-git submodule update --init --recursive
+git --version && make --version | head -1 && ssh -T git@github.com 2>&1 | head -1
 ```
 
-To install a skill into your own Claude Code / Cursor / Codex setup, copy or symlink the corresponding subdirectory under `~/.claude/skills/` (or your tool's equivalent).
+### 1. Pick a home and clone
 
-> Maintaining this catalog? See **[MAINTENANCE.md](./MAINTENANCE.md)** and run `make help`.
+Put the catalog somewhere persistent (NOT inside a project you might delete). Example:
+
+```bash
+mkdir -p ~/code && cd ~/code
+git clone --recursive git@github.com:mfzzf/SKILLS.git
+cd SKILLS
+```
+
+If you forgot `--recursive`, run `make init` — it's idempotent.
+
+If you prefer HTTPS:
+
+```bash
+git clone --recursive https://github.com/mfzzf/SKILLS.git
+```
+
+### 2. Verify the catalog landed cleanly
+
+```bash
+make status        # each skill should show "behind: 0"
+make check         # every submodule should also appear in this README
+```
+
+### 3. Wire it into Claude Code and Codex
+
+```bash
+make link
+```
+
+This creates symlinks:
+
+- `~/.claude/skills/<name>` → catalog
+- `~/.codex/skills/<name>`  → catalog
+- Bundle skills (`anthropics-skills/skills/*`) are auto-expanded so each shows up as its own top-level entry (`frontend-design`, `skill-creator`, `claude-api`, …).
+
+Conflict handling:
+
+- An existing **symlink** with the same name is updated in place.
+- An existing **real directory** is left alone and printed as a warning — move it aside (`mv foo foo.bak`) if you want the catalog version to take over.
+
+Verify:
+
+```bash
+make link-status
+```
+
+Every catalog entry should appear as `↪ <name> -> ...  [catalog]` under both roots.
+
+### 4. Restart your clients
+
+- **Claude Code**: restart the CLI / VS Code extension so it rescans `~/.claude/skills/`.
+- **Codex**: restart the Codex CLI / session.
+
+Then ask the agent something that should trigger one of the skills (e.g. *"scaffold a Next.js app"* → should pick up `frontend-build-2026`).
+
+### 5. Stay current — daily ops
+
+```bash
+cd ~/code/SKILLS
+
+make sync          # pull catalog + move submodules to pinned commits
+make bump-all      # advance every submodule to its upstream HEAD (then push)
+make push          # publish bumped pins
+make link          # safe to rerun; picks up newly added bundle members
+```
+
+Optional shell alias:
+
+```bash
+echo "alias skills-up='cd ~/code/SKILLS && make sync && make bump-all && make push && make link'" >> ~/.zshrc
+source ~/.zshrc
+```
+
+### 6. Uninstall
+
+```bash
+cd ~/code/SKILLS
+make unlink        # removes only the symlinks this catalog created
+# then optionally:
+cd .. && rm -rf SKILLS
+```
+
+`make unlink` is conservative: it ignores external symlinks (e.g. `~/.agents/skills/...`) and real directories. Nothing outside the catalog is touched.
+
+---
+
+## Quick clone (if you already know the drill)
+
+```bash
+git clone --recursive git@github.com:mfzzf/SKILLS.git
+cd SKILLS && make link
+```
 
 ---
 
