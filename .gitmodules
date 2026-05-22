@@ -1,0 +1,6 @@
+[submodule "go-backend-ddd"]
+	path = go-backend-ddd
+	url = git@github.com:mfzzf/go-ddd-skills.git
+[submodule "frontend-build-2026"]
+	path = frontend-build-2026
+	url = git@github.com:mfzzf/frontend-build-2026.git
