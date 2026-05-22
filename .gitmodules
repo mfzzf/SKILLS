@@ -10,3 +10,6 @@
 [submodule "modelverse-image"]
 	path = modelverse-image
 	url = git@github.com:mfzzf/modelverse-image.git
+[submodule "ucloud-api"]
+	path = ucloud-api
+	url = git@github.com:mfzzf/ucloud-skills.git

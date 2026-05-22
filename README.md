@@ -152,6 +152,16 @@ Generate or edit raster images through the **ModelVerse OpenAI-compatible `gpt-i
 
 ---
 
+### [ucloud-api](./ucloud-api) &nbsp;·&nbsp; [source](https://github.com/mfzzf/ucloud-skills)
+
+Call any **UCloud OpenAPI** (UAI / ModelVerse / UMInfer / UHost / VPC / …) with correct SHA1 signing. Bundles a Python helper that handles param sorting, encoding edge cases (bool, float), VPC vs public endpoints, env-var creds, dry-run, and a `--selftest` against UCloud's published verification sample.
+
+**Triggers**: any UCloud Action name (`List*`, `Describe*`, `Get*`, `Create*`, `Delete*`, `Modify*` against `api.ucloud.cn`), "UCloud signature", "UCloud PublicKey PrivateKey", "ListUMInferAPIKey", "GetProjectList", "调用 UCloud 接口", "UCloud 签名".
+
+**What's inside**: `scripts/ucloud_call.py` (CLI + library) with selftest, `references/signing.md` (canonical algorithm walkthrough with verification sample), and a growing `references/apis/` recipe book (`list-um-infer-apikey.md`, `get-project-list.md`, …). Add a recipe whenever you call a new Action.
+
+---
+
 ### Upstream — [anthropics/skills](./anthropics-skills) &nbsp;·&nbsp; [source](https://github.com/anthropics/skills)
 
 Anthropic's official skill collection, vendored as a submodule so we always have the canonical references at hand. The two we lean on most:
