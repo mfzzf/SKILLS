@@ -162,6 +162,16 @@ Call any **UCloud OpenAPI** (UAI / ModelVerse / UMInfer / UHost / VPC / …) wit
 
 ---
 
+### [modelverse-api](./modelverse-api) &nbsp;·&nbsp; [source](https://github.com/mfzzf/modelverse-skills)
+
+Data-plane caller for **UCloud ModelVerse / UModelVerse** — invoke any hosted model (DeepSeek, Qwen, GPT-5, gpt-image-2, Sora-2, Veo-3.1, Kling, Wan-2.x, MiniMax-Hailuo, Suno, Gemini / Claude compatible, embeddings, rerank, …) over OpenAI-compatible endpoints (`api.modelverse.cn` / `api.umodelverse.ai`). Pairs with `ucloud-api` (the control plane that mints API keys).
+
+**Triggers**: "ModelVerse", "UModelVerse", `MODELVERSE_API_KEY`, "OpenAI compatible UCloud", any ModelVerse-hosted model name, "调用 ModelVerse", "UCloud 模型市场".
+
+**What's inside**: `scripts/modelverse_call.py` (subcommands `models` / `chat` / `image` / `raw`, streaming-aware), full upstream `api_doc/` mirrored under `references/` (per-model recipes for ~80 text / image / video / audio models, plus error codes and quick-start), and `scripts/update-docs.sh` to refresh `references/` from the upstream internal GitLab.
+
+---
+
 ### Upstream — [anthropics/skills](./anthropics-skills) &nbsp;·&nbsp; [source](https://github.com/anthropics/skills)
 
 Anthropic's official skill collection, vendored as a submodule so we always have the canonical references at hand. The two we lean on most:
