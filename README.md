@@ -10,6 +10,8 @@ git submodule update --init --recursive
 
 To install a skill into your own Claude Code / Cursor / Codex setup, copy or symlink the corresponding subdirectory under `~/.claude/skills/` (or your tool's equivalent).
 
+> Maintaining this catalog? See **[MAINTENANCE.md](./MAINTENANCE.md)** and run `make help`.
+
 ---
 
 ## Catalog
