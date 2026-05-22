@@ -1,4 +1,4 @@
-.PHONY: help init status sync bump bump-all add-skill remove-skill check push pull foreach clean link unlink link-status lint
+.PHONY: help init status sync bump bump-all add-skill remove-skill check push pull foreach clean link unlink link-status lint install-hooks
 
 # -------- config --------
 SHELL := /bin/bash
@@ -36,6 +36,12 @@ help: ## Show this help
 # -------- everyday --------
 init: ## Initialize submodules after a fresh clone (idempotent)
 	git submodule update --init --recursive
+	@$(MAKE) -s install-hooks
+
+install-hooks: ## Point git at the tracked hooks/ dir (idempotent; safe to rerun)
+	@git config core.hooksPath hooks
+	@chmod +x hooks/* 2>/dev/null || true
+	@echo "✓ git hooks installed (core.hooksPath=hooks)"
 
 status: ## Show current commit of each skill and whether it's behind upstream
 	@for s in $(SKILLS); do \

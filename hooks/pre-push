@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# pre-push — block pushes that include broken SKILL.md frontmatter.
+#
+# Installed by `make install-hooks` via `git config core.hooksPath hooks`.
+# Bypass in an emergency with `git push --no-verify` (but please fix it after).
+
+set -euo pipefail
+ROOT="$(git rev-parse --show-toplevel)"
+cd "$ROOT"
+
+echo "→ pre-push: linting SKILL.md frontmatter…"
+if ! python3 scripts/lint-skills.py; then
+  echo
+  echo "✗ pre-push aborted: fix the SKILL.md errors above, or rerun with --no-verify."
+  exit 1
+fi
+echo "✓ pre-push: lint clean"

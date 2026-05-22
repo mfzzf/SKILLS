@@ -190,9 +190,20 @@ make remove-skill SKILL=foo-skill
 |---|---|
 | 看 catalog 工作树状态 | `git status` 或 `make check` |
 | 看每个 skill pin / 上游差多少 | `make status` |
+| 校验 SKILL.md YAML 是否合法 | `make lint` |
 | 在每个 skill 跑命令 | `make foreach CMD='git log -1 --oneline'` |
 | 清理子模块里未跟踪垃圾 | `make clean` |
 | 看所有 make 目标 | `make help` |
+
+### Lint + pre-push hook
+
+`make lint` 跑 `scripts/lint-skills.py` 校验每个 SKILL.md 的 YAML frontmatter（约 25 个）。检查内容：
+
+- 没有"bare colon trap"：`Trigger on: "foo"` 这种 unquoted 冒号会被 YAML 当作嵌套 mapping，Claude Code 加载会 `Skipped loading X skill(s)`
+- `name:` / `description:` 必须存在且非空
+- 装了 `pyyaml` 走真 YAML 解析；没装就走 stdlib 状态机启发式（已对英文撇号 `it's` 做了豁免）
+
+`make init` 会自动跑 `make install-hooks`，把 `core.hooksPath` 指向仓内的 `hooks/`，从此每次 `git push` 都自动 lint，挂了会 abort。紧急情况可以 `git push --no-verify` 绕过——但请事后修。
 
 ---
 
