@@ -1,4 +1,4 @@
-.PHONY: help init status sync bump bump-all add-skill remove-skill check push pull foreach clean
+.PHONY: help init status sync bump bump-all add-skill remove-skill check push pull foreach clean link unlink link-status
 
 # -------- config --------
 SHELL := /bin/bash
@@ -6,8 +6,19 @@ SKILL ?=
 URL   ?=
 MSG   ?=
 
+# Roots that consume skills. Override with `make link CLAUDE_ROOT=... CODEX_ROOT=...`.
+CLAUDE_ROOT ?= $(HOME)/.claude/skills
+CODEX_ROOT  ?= $(HOME)/.codex/skills
+
+# Catalog root (absolute) — used as symlink target so links survive `cd`.
+CATALOG := $(abspath .)
+
 # Discover submodule paths from .gitmodules at make-time
 SKILLS := $(shell git config -f .gitmodules --get-regexp '^submodule\..*\.path$$' 2>/dev/null | awk '{print $$2}')
+
+# For the upstream anthropics-skills bundle, the actual skills live one level deeper.
+# Override on the cmdline if you add more bundles: `make link BUNDLES="anthropics-skills:skills other:foo"`
+BUNDLES ?= anthropics-skills:skills
 
 # -------- meta --------
 help: ## Show this help
@@ -112,3 +123,81 @@ push: ## Push catalog (NOT submodule sources — those are pushed from their own
 
 clean: ## Drop untracked junk inside submodules (does not touch tracked files)
 	git submodule foreach --recursive 'git clean -fdx -e .gitkeep || true'
+
+# -------- realtime sync via symlinks --------
+# Strategy: ~/.claude/skills/<name> and ~/.codex/skills/<name> are symlinks
+# into this catalog. Pulling/bumping in the catalog is instantly visible to
+# both Claude Code and Codex with no copy step.
+
+link: ## Symlink every catalog skill into ~/.claude/skills and ~/.codex/skills
+	@mkdir -p "$(CLAUDE_ROOT)" "$(CODEX_ROOT)"
+	@for s in $(SKILLS); do \
+	  bundle_inner=""; \
+	  for pair in $(BUNDLES); do \
+	    name=$${pair%%:*}; inner=$${pair##*:}; \
+	    if [ "$$s" = "$$name" ]; then bundle_inner=$$inner; fi; \
+	  done; \
+	  if [ -n "$$bundle_inner" ]; then \
+	    for sub in "$(CATALOG)/$$s/$$bundle_inner"/*/; do \
+	      [ -d "$$sub" ] || continue; \
+	      name=$$(basename "$$sub"); \
+	      $(MAKE) -s _link_one TARGET="$(CATALOG)/$$s/$$bundle_inner/$$name" NAME="$$name"; \
+	    done; \
+	  else \
+	    $(MAKE) -s _link_one TARGET="$(CATALOG)/$$s" NAME="$$s"; \
+	  fi; \
+	done
+	@echo ""
+	@echo "Done. Verify with: make link-status"
+
+# Internal: link one TARGET as NAME into both roots, skipping conflicts.
+_link_one:
+	@for root in "$(CLAUDE_ROOT)" "$(CODEX_ROOT)"; do \
+	  dest="$$root/$(NAME)"; \
+	  if [ -L "$$dest" ]; then \
+	    cur=$$(readlink "$$dest"); \
+	    if [ "$$cur" = "$(TARGET)" ]; then \
+	      echo "  = $$dest"; \
+	    else \
+	      ln -sfn "$(TARGET)" "$$dest"; \
+	      echo "  ~ $$dest  (was -> $$cur)"; \
+	    fi; \
+	  elif [ -e "$$dest" ]; then \
+	    echo "  ! $$dest exists as a real dir/file — skipped. Move it aside, then rerun."; \
+	  else \
+	    ln -s "$(TARGET)" "$$dest"; \
+	    echo "  + $$dest"; \
+	  fi; \
+	done
+
+unlink: ## Remove symlinks this catalog created in both roots (keeps real dirs untouched)
+	@for root in "$(CLAUDE_ROOT)" "$(CODEX_ROOT)"; do \
+	  [ -d "$$root" ] || continue; \
+	  for entry in "$$root"/*; do \
+	    [ -L "$$entry" ] || continue; \
+	    target=$$(readlink "$$entry"); \
+	    case "$$target" in \
+	      "$(CATALOG)"/*) rm "$$entry" && echo "  - $$entry";; \
+	    esac; \
+	  done; \
+	done
+
+link-status: ## Show what's linked in ~/.claude/skills and ~/.codex/skills
+	@for root in "$(CLAUDE_ROOT)" "$(CODEX_ROOT)"; do \
+	  echo ""; \
+	  printf "\033[1m%s\033[0m\n" "$$root"; \
+	  [ -d "$$root" ] || { echo "  (does not exist)"; continue; }; \
+	  for entry in "$$root"/*; do \
+	    [ -e "$$entry" ] || [ -L "$$entry" ] || continue; \
+	    name=$$(basename "$$entry"); \
+	    if [ -L "$$entry" ]; then \
+	      target=$$(readlink "$$entry"); \
+	      case "$$target" in \
+	        "$(CATALOG)"/*) echo "  ↪ $$name -> $$target  [catalog]";; \
+	        *)              echo "  ↪ $$name -> $$target  [external]";; \
+	      esac; \
+	    else \
+	      echo "  □ $$name  (real dir, not linked)"; \
+	    fi; \
+	  done; \
+	done

@@ -36,6 +36,16 @@ Production-grade **Next.js 16** frontend build playbook pinned to the May 2026 s
 
 ---
 
+### [modelverse-image](./modelverse-image) &nbsp;·&nbsp; [source](https://github.com/mfzzf/modelverse-image)
+
+Generate or edit raster images through the **ModelVerse OpenAI-compatible `gpt-image-2` API**. Use when an agent (Codex / Claude) needs to create images from prompts, edit an existing image with an optional mask, save returned base64 data to local files, or surface curl/Python examples.
+
+**Triggers**: "generate an image", "image edit with mask", "gpt-image-2", "ModelVerse image API", "save b64_json to file".
+
+**What's inside**: `scripts/modelverse_image.py` with `generate` and `edit` subcommands, an OpenAI-compatible agent spec, and an `references/api.md` covering auth, endpoints, and response shape.
+
+---
+
 ### Upstream — [anthropics/skills](./anthropics-skills) &nbsp;·&nbsp; [source](https://github.com/anthropics/skills)
 
 Anthropic's official skill collection, vendored as a submodule so we always have the canonical references at hand. The two we lean on most:

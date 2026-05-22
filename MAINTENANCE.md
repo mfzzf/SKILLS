@@ -217,6 +217,7 @@ make sync                                                    # 日常同步
 # 看
 make status                                                  # pin vs upstream
 make check                                                   # 索引完整性
+make link-status                                             # 客户端 symlink 状态
 
 # 改 catalog
 make add-skill    SKILL=foo URL=git@github.com:mfzzf/foo.git
@@ -224,7 +225,69 @@ make bump         SKILL=foo
 make bump-all
 make remove-skill SKILL=foo
 
+# 客户端实时同步
+make link                                                    # 链入 ~/.claude/skills + ~/.codex/skills
+make unlink                                                  # 反向解链
+
 # 发
 make commit MSG="..."
 make push
 ```
+
+---
+
+## 10. 与 Claude Code / Codex 客户端实时同步
+
+Claude Code 读取 `~/.claude/skills/`，Codex 读取 `~/.codex/skills/`。我们要的是**改 catalog → 客户端立刻看到**，而不是 copy。结论：用 **symlink**，不要 copy。
+
+### 一次绑定
+
+```bash
+make link
+```
+
+这会把每个 catalog skill 链入两个客户端目录：
+- `frontend-build-2026`、`go-backend-ddd`、`modelverse-image` → 直接指向 catalog 子目录
+- `anthropics-skills` 是上游 bundle，自动展开它的 `skills/*` 每个子 skill（`frontend-design`、`skill-creator` 等）
+
+冲突处理：
+- 已存在的同名 symlink，会更新到新 target 并打印 `~`
+- 已存在的**真目录**（不是 link），会**跳过并提示**——先把它挪到 `xxx.bak.<ts>` 或删掉，再 `make link`
+- 已经指向 catalog 的 link，原样保留，打印 `=`
+
+### 实时同步是怎么实现的
+
+- 你在 catalog 里 `make bump SKILL=frontend-build-2026`：子目录 commit 移动 → 客户端通过 symlink 立刻看到新内容，**零延迟、零 copy**。
+- 你在 `~/.claude/skills/foo-skill/SKILL.md` 里改一行：因为是 symlink，等同于改 catalog 子模块本体；走正常的"在源仓改 → push → catalog bump"流程（见 §5）。
+- 升级所有上游 Anthropic skill：`make bump SKILL=anthropics-skills && make push`——两个客户端同时拿到新版。
+
+### 验证
+
+```bash
+make link-status
+```
+
+每条会标记：
+- `[catalog]` — 指向本仓 submodule（受控）
+- `[external]` — 指向别处（你之前装的，比如 `~/.agents/skills/drawio`）
+- `□ ... (real dir, not linked)` — 客户端目录里有同名真目录占位
+
+### 反操作 / 卸载
+
+```bash
+make unlink
+```
+
+只删指向 catalog 的 symlink，不动其它东西（外部 link、真目录都安全）。
+
+### 自定义目标根
+
+默认 `CLAUDE_ROOT=~/.claude/skills`、`CODEX_ROOT=~/.codex/skills`。多环境（比如分离测试环境）可临时覆盖：
+
+```bash
+make link CLAUDE_ROOT=/tmp/claude-skills CODEX_ROOT=/tmp/codex-skills
+```
+
+### 不用 symlink 的情况
+
+如果某个客户端目录在网络盘或 Windows 路径不支持 symlink，再退化到 copy + cron。否则 symlink 是事实标准——既"实时"又零维护成本。

@@ -7,3 +7,6 @@
 [submodule "anthropics-skills"]
 	path = anthropics-skills
 	url = https://github.com/anthropics/skills.git
+[submodule "modelverse-image"]
+	path = modelverse-image
+	url = git@github.com:mfzzf/modelverse-image.git
