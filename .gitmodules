@@ -16,3 +16,12 @@
 [submodule "modelverse-api"]
 	path = modelverse-api
 	url = git@github.com:mfzzf/modelverse-skills.git
+[submodule "openai-docs"]
+	path = openai-docs
+	url = git@github.com:mfzzf/openai-docs.git
+[submodule "gemini-docs"]
+	path = gemini-docs
+	url = git@github.com:mfzzf/gemini-docs.git
+[submodule "anthropic-docs"]
+	path = anthropic-docs
+	url = git@github.com:mfzzf/anthropic-docs.git

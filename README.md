@@ -172,6 +172,32 @@ Data-plane caller for **UCloud ModelVerse / UModelVerse** — invoke any hosted 
 
 ---
 
+### [openai-docs](./openai-docs) &nbsp;·&nbsp; [source](https://github.com/mfzzf/openai-docs)
+
+Verbatim offline mirror of the **OpenAI API documentation** (`developers.openai.com/api/docs/llms-full.txt`, ~1.9 MB). Use as authoritative reference whenever a question hinges on OpenAI API behavior — endpoints, models, parameters, error codes, Responses/Realtime/Assistants/Batch/Files specs, function calling shapes, streaming SSE, etc.
+
+**Triggers**: "OpenAI docs", "OpenAI SDK", `gpt-4.1`/`gpt-4o`/`gpt-5`, Responses API, Assistants, Realtime, Whisper, "OpenAI 文档".
+
+---
+
+### [gemini-docs](./gemini-docs) &nbsp;·&nbsp; [source](https://github.com/mfzzf/gemini-docs)
+
+Verbatim offline mirror of **Google Gemini API documentation** (`ai.google.dev/api/llms.txt` index + ~15 child `.md.txt` files). Use for Gemini endpoint shapes, model ids, multimodal inputs, file/upload API, batch jobs, embeddings, code execution tool, grounding, safety settings.
+
+**Triggers**: "Gemini docs", `gemini-2.5-pro`/`gemini-2.5-flash`/`gemini-3-pro`, `google-genai` SDK, Vertex AI, "Gemini 文档".
+
+---
+
+### [anthropic-docs](./anthropic-docs) &nbsp;·&nbsp; [source](https://github.com/mfzzf/anthropic-docs)
+
+Verbatim offline mirror of **Anthropic / Claude API documentation** (`platform.claude.com/llms-full.txt`, ~80 MB raw → split into ~1300 per-page markdown files). Use for Claude API behavior — prompt caching, extended thinking, vision/PDF/files API, batches, tool use, computer use, MCP, Claude Code features, error codes, SDK usage.
+
+**Triggers**: "Anthropic docs", "Claude API", `claude-opus-4-7`/`claude-sonnet-4-6`/`claude-haiku-4-5`, "Anthropic SDK", prompt caching, extended thinking, "Anthropic 文档".
+
+> Note this skill is **separate** from [`anthropics-skills`](./anthropics-skills) below — that one is the official skill collection (frontend-design / skill-creator / mcp-builder / …); this one is the docs mirror.
+
+---
+
 ### Upstream — [anthropics/skills](./anthropics-skills) &nbsp;·&nbsp; [source](https://github.com/anthropics/skills)
 
 Anthropic's official skill collection, vendored as a submodule so we always have the canonical references at hand. The two we lean on most:
