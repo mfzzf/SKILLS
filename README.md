@@ -198,6 +198,14 @@ Verbatim offline mirror of **Anthropic / Claude API documentation** (`platform.c
 
 ---
 
+### [shadcn-ui-docs](./shadcn-ui-docs) &nbsp;·&nbsp; [source](https://github.com/mfzzf/shadcn-ui-docs)
+
+Offline mirror of the **shadcn/ui documentation** (`ui.shadcn.com/llms.txt` index + per-page `.md` for ~109 doc pages). Covers installation across Next.js/Vite/Remix/Astro/Laravel/Gatsby/React-Router/TanStack, all ~60 components (Button → DataTable → Sidebar → Sonner), CLI, `components.json`, theming, dark mode, RTL, forms, monorepo, React 19, Tailwind v4, MCP server, and the `registry.json` / `registry-item.json` schemas.
+
+**Triggers**: `shadcn`, `shadcn/ui`, `npx shadcn add`, `components.json`, `registry.json`, `registry-item.json`, Radix-based component names (Dialog/Sheet/Combobox/DataTable/Sidebar/Sonner/…), "shadcn 文档".
+
+---
+
 ### Upstream — [anthropics/skills](./anthropics-skills) &nbsp;·&nbsp; [source](https://github.com/anthropics/skills)
 
 Anthropic's official skill collection, vendored as a submodule so we always have the canonical references at hand. The two we lean on most:

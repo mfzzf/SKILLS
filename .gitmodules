@@ -31,3 +31,6 @@
 [submodule "wdkns-skills"]
 	path = wdkns-skills
 	url = git@github.com:wdkns/wdkns-skills.git
+[submodule "shadcn-ui-docs"]
+	path = shadcn-ui-docs
+	url = git@github.com:mfzzf/shadcn-ui-docs.git
