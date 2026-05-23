@@ -228,6 +228,30 @@ Jesse Vincent's **Superpowers** — an opinionated software-development methodol
 
 ---
 
+### Upstream — [wdkns-skills](./wdkns-skills) &nbsp;·&nbsp; [source](https://github.com/wdkns/wdkns-skills)
+
+视频讲座 → 结构化中文 LaTeX 讲义/PDF 的工具集，外加一个 SRT 字幕精修 skill。Bundle 结构，子 skill 通过 `make link` 自动展开到 `~/.claude/skills/`。
+
+#### [→ youtube-render-pdf](./wdkns-skills/skills/youtube-render-pdf)
+
+把 YouTube 视频（讲座、教程、技术分享）转成图文并茂的中文 LaTeX 讲义并渲染为 PDF：抓取标题/章节/字幕、抽取关键帧/图表/公式/代码、首页放原始封面、末尾加综述章节。
+
+**Triggers**: "YouTube 视频转讲义"、"YouTube → PDF"、"把这个 YouTube 教程整理成笔记"。
+
+#### [→ bilibili-render-pdf](./wdkns-skills/skills/bilibili-render-pdf)
+
+YouTube 流程的 B 站适配版：字幕三级回退（CC → Whisper ASR → 纯视觉）、cookies 登录拿 1080P+、分 P 视频询问处理范围、过滤"一键三连"等平台话术。
+
+**Triggers**: "B 站视频转讲义"、"Bilibili → PDF"、BV 号 + "整理成笔记"。
+
+#### [→ subtitle-refine](./wdkns-skills/skills/subtitle-refine)
+
+中文 SRT 字幕上线级精修：只做 ASR 纠错/语气词清理/停顿空格/单条字数限制，不润色不改写，保持与原音频严格同步；随附 `check_clean_srt.py` 做规则与时间轴校验。
+
+**Triggers**: "字幕精修"、"clean SRT"、"SRT 校验"、纪录片/访谈/口播字幕清洗。
+
+---
+
 ## Layout
 
 ```
