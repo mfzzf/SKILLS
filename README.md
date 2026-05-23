@@ -218,6 +218,16 @@ The meta-skill for authoring, improving, and evaluating other skills — drafts 
 
 ---
 
+### Upstream — [superpowers](./superpowers) &nbsp;·&nbsp; [source](https://github.com/obra/superpowers)
+
+Jesse Vincent's **Superpowers** — an opinionated software-development methodology delivered as a bundle of auto-triggering skills. Pushes the agent to spec → plan → subagent-driven TDD instead of jumping straight to code. Vendored as a submodule so we always have the canonical copies.
+
+**Triggers**: "brainstorm a feature", "write a plan", "TDD this", "systematic debugging", "code review", "use a worktree", "dispatch subagents", "verify before done", "finish a branch", "create a skill".
+
+**What's inside** (`superpowers/skills/`): `brainstorming`, `writing-plans`, `executing-plans`, `subagent-driven-development`, `dispatching-parallel-agents`, `test-driven-development`, `systematic-debugging`, `verification-before-completion`, `requesting-code-review`, `receiving-code-review`, `using-git-worktrees`, `finishing-a-development-branch`, `writing-skills`, `using-superpowers`. Also ships hooks, install scripts for multiple harnesses (Claude Code / Codex / Gemini / OpenCode / Cursor / Copilot CLI), and `AGENTS.md` / `CLAUDE.md` / `GEMINI.md` driver prompts.
+
+---
+
 ## Layout
 
 ```

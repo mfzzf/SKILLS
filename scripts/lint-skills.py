@@ -148,13 +148,14 @@ def find_skill_files() -> list[Path]:
                 p = ROOT / m.group(1) / "SKILL.md"
                 if p.is_file():
                     targets.append(p)
-    # Also walk anthropics-skills/skills/*/SKILL.md if present
-    bundle = ROOT / "anthropics-skills" / "skills"
-    if bundle.is_dir():
-        for sub in sorted(bundle.iterdir()):
-            sub_skill = sub / "SKILL.md"
-            if sub_skill.is_file():
-                targets.append(sub_skill)
+    # Also walk known bundle dirs (anthropics-skills/skills, superpowers/skills) for nested SKILL.md
+    for bundle_rel in ("anthropics-skills/skills", "superpowers/skills"):
+        bundle = ROOT / bundle_rel
+        if bundle.is_dir():
+            for sub in sorted(bundle.iterdir()):
+                sub_skill = sub / "SKILL.md"
+                if sub_skill.is_file():
+                    targets.append(sub_skill)
     return targets
 
 

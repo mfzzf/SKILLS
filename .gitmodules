@@ -25,3 +25,6 @@
 [submodule "anthropic-docs"]
 	path = anthropic-docs
 	url = git@github.com:mfzzf/anthropic-docs.git
+[submodule "superpowers"]
+	path = superpowers
+	url = https://github.com/obra/superpowers.git

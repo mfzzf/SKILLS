@@ -18,7 +18,7 @@ SKILLS := $(shell git config -f .gitmodules --get-regexp '^submodule\..*\.path$$
 
 # For the upstream anthropics-skills bundle, the actual skills live one level deeper.
 # Override on the cmdline if you add more bundles: `make link BUNDLES="anthropics-skills:skills other:foo"`
-BUNDLES ?= anthropics-skills:skills
+BUNDLES ?= anthropics-skills:skills superpowers:skills
 
 # -------- meta --------
 help: ## Show this help
