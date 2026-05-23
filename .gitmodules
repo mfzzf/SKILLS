@@ -28,3 +28,6 @@
 [submodule "superpowers"]
 	path = superpowers
 	url = https://github.com/obra/superpowers.git
+[submodule "wdkns-skills"]
+	path = wdkns-skills
+	url = git@github.com:wdkns/wdkns-skills.git
