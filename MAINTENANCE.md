@@ -239,6 +239,8 @@ make remove-skill SKILL=foo
 # 客户端实时同步
 make link                                                    # 链入 ~/.claude/skills + ~/.codex/skills
 make unlink                                                  # 反向解链
+make ignore-skill   SKILL=foo                                # 持久忽略某个 skill
+make unignore-skill SKILL=foo                                # 取消忽略
 
 # 发
 make commit MSG="..."
@@ -300,6 +302,17 @@ make unlink-skill SKILL=nextjs-docs   # 单 skill 也能用
 ```
 
 恢复就 `make link`。
+
+### 持久化忽略：`.skillignore`
+
+`unlink-skill` 只是一次性删 symlink——下次 `make link` 会重新建出来。如果某个 skill 你**长期**不想链入本机客户端（比如 bundle 里某个用不上的子 skill），把它写进仓库根目录的 `.skillignore`：
+
+```bash
+make ignore-skill   SKILL=shadcn       # 追加到 .skillignore，并立即在三个 root 清掉 symlink
+make unignore-skill SKILL=shadcn       # 从 .skillignore 移掉；下次 make link 会重新链入
+```
+
+`.skillignore` 受 git 跟踪，团队成员共享同一份忽略列表。匹配规则：每行一个名字，可以是顶层 skill（`shadcn-ui`）也可以是 bundle 展开后的子 skill 名（`shadcn`、`frontend-design`）。`make link` 命中时打印 `· <name> (ignored by .skillignore)` 并跳过；`make link-status` 会给 `.skillignore` 中的条目额外标 `[ignored]`。
 
 ### 自定义目标根
 

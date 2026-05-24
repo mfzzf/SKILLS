@@ -1,4 +1,4 @@
-.PHONY: help init status sync bump bump-all add-skill remove-skill check push pull foreach clean link unlink unlink-skill link-status lint install-hooks
+.PHONY: help init status sync bump bump-all add-skill remove-skill check push pull foreach clean link unlink unlink-skill ignore-skill unignore-skill link-status lint install-hooks
 
 # -------- config --------
 SHELL := /bin/bash
@@ -20,7 +20,12 @@ SKILLS := $(shell git config -f .gitmodules --get-regexp '^submodule\..*\.path$$
 
 # For the upstream anthropics-skills bundle, the actual skills live one level deeper.
 # Override on the cmdline if you add more bundles: `make link BUNDLES="anthropics-skills:skills other:foo"`
-BUNDLES ?= anthropics-skills:skills superpowers:skills wdkns-skills:skills
+BUNDLES ?= anthropics-skills:skills superpowers:skills wdkns-skills:skills shadcn-ui:skills
+
+# Persistent blocklist consumed by `make link` / `make link-status`.
+# Names match either a top-level catalog skill or a bundle-expanded sub-skill.
+IGNORE_FILE := .skillignore
+IGNORE := $(shell [ -f $(IGNORE_FILE) ] && grep -vE '^[[:space:]]*(\#|$$)' $(IGNORE_FILE) | awk '{print $$1}')
 
 # -------- meta --------
 help: ## Show this help
@@ -149,12 +154,18 @@ link: ## Symlink every catalog skill into ~/.claude/skills, ~/.codex/skills, ~/.
 	    if [ "$$s" = "$$name" ]; then bundle_inner=$$inner; fi; \
 	  done; \
 	  if [ -n "$$bundle_inner" ]; then \
+	    skip_bundle=0; for ig in $(IGNORE); do [ "$$ig" = "$$s" ] && skip_bundle=1; done; \
+	    if [ "$$skip_bundle" = 1 ]; then echo "  · $$s/* (bundle ignored by .skillignore)"; continue; fi; \
 	    for sub in "$(CATALOG)/$$s/$$bundle_inner"/*/; do \
 	      [ -d "$$sub" ] || continue; \
 	      name=$$(basename "$$sub"); \
+	      skip=0; for ig in $(IGNORE); do [ "$$ig" = "$$name" ] && skip=1; done; \
+	      if [ "$$skip" = 1 ]; then echo "  · $$name  (ignored by .skillignore)"; continue; fi; \
 	      $(MAKE) -s _link_one TARGET="$(CATALOG)/$$s/$$bundle_inner/$$name" NAME="$$name"; \
 	    done; \
 	  else \
+	    skip=0; for ig in $(IGNORE); do [ "$$ig" = "$$s" ] && skip=1; done; \
+	    if [ "$$skip" = 1 ]; then echo "  · $$s  (ignored by .skillignore)"; continue; fi; \
 	    $(MAKE) -s _link_one TARGET="$(CATALOG)/$$s" NAME="$$s"; \
 	  fi; \
 	done
@@ -200,15 +211,42 @@ unlink-skill: ## Remove symlinks pointing into one catalog skill (handles bundle
 	  for entry in "$$root"/*; do \
 	    [ -L "$$entry" ] || continue; \
 	    target=$$(readlink "$$entry"); \
+	    name=$$(basename "$$entry"); \
+	    match=0; \
 	    case "$$target" in \
-	      "$(CATALOG)/$(SKILL)"|"$(CATALOG)/$(SKILL)/"*) \
-	        rm "$$entry" && echo "  - $$entry" && n=$$((n+1));; \
+	      "$(CATALOG)/$(SKILL)"|"$(CATALOG)/$(SKILL)/"*) match=1;; \
 	    esac; \
+	    [ "$$name" = "$(SKILL)" ] && case "$$target" in "$(CATALOG)"/*) match=1;; esac; \
+	    if [ "$$match" = 1 ]; then rm "$$entry" && echo "  - $$entry" && n=$$((n+1)); fi; \
 	  done; \
 	done; \
 	echo "removed $$n symlink(s) for SKILL=$(SKILL)"
 
+ignore-skill: ## Add SKILL to .skillignore (persistent) and unlink now. Usage: make ignore-skill SKILL=shadcn
+	@if [ -z "$(SKILL)" ]; then echo "usage: make ignore-skill SKILL=<name>" >&2; exit 2; fi
+	@touch $(IGNORE_FILE)
+	@if grep -qE "^[[:space:]]*$(SKILL)[[:space:]]*$$" $(IGNORE_FILE); then \
+	  echo "  = $(SKILL) already in $(IGNORE_FILE)"; \
+	else \
+	  echo "$(SKILL)" >> $(IGNORE_FILE); \
+	  echo "  + $(SKILL) -> $(IGNORE_FILE)"; \
+	fi
+	@$(MAKE) -s unlink-skill SKILL=$(SKILL)
+
+unignore-skill: ## Remove SKILL from .skillignore so next `make link` re-links it. Usage: make unignore-skill SKILL=shadcn
+	@if [ -z "$(SKILL)" ]; then echo "usage: make unignore-skill SKILL=<name>" >&2; exit 2; fi
+	@if [ ! -f $(IGNORE_FILE) ] || ! grep -qE "^[[:space:]]*$(SKILL)[[:space:]]*$$" $(IGNORE_FILE); then \
+	  echo "  = $(SKILL) not in $(IGNORE_FILE)"; \
+	else \
+	  tmp=$$(mktemp); grep -vE "^[[:space:]]*$(SKILL)[[:space:]]*$$" $(IGNORE_FILE) > "$$tmp"; mv "$$tmp" $(IGNORE_FILE); \
+	  echo "  - $(SKILL) removed from $(IGNORE_FILE) (run \`make link\` to re-link)"; \
+	fi
+
 link-status: ## Show what's linked in ~/.claude/skills, ~/.codex/skills, ~/.agents/skills
+	@if [ -n "$(IGNORE)" ]; then \
+	  printf "\033[1m.skillignore\033[0m\n"; \
+	  for ig in $(IGNORE); do echo "  · $$ig"; done; \
+	fi
 	@for root in $(ROOTS); do \
 	  echo ""; \
 	  printf "\033[1m%s\033[0m\n" "$$root"; \
@@ -216,14 +254,15 @@ link-status: ## Show what's linked in ~/.claude/skills, ~/.codex/skills, ~/.agen
 	  for entry in "$$root"/*; do \
 	    [ -e "$$entry" ] || [ -L "$$entry" ] || continue; \
 	    name=$$(basename "$$entry"); \
+	    tag=""; for ig in $(IGNORE); do [ "$$ig" = "$$name" ] && tag=" [ignored]"; done; \
 	    if [ -L "$$entry" ]; then \
 	      target=$$(readlink "$$entry"); \
 	      case "$$target" in \
-	        "$(CATALOG)"/*) echo "  ↪ $$name -> $$target  [catalog]";; \
-	        *)              echo "  ↪ $$name -> $$target  [external]";; \
+	        "$(CATALOG)"/*) echo "  ↪ $$name -> $$target  [catalog]$$tag";; \
+	        *)              echo "  ↪ $$name -> $$target  [external]$$tag";; \
 	      esac; \
 	    else \
-	      echo "  □ $$name  (real dir, not linked)"; \
+	      echo "  □ $$name  (real dir, not linked)$$tag"; \
 	    fi; \
 	  done; \
 	done

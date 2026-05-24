@@ -1,0 +1,9 @@
+# Skills to skip when running `make link`.
+# One name per line. Names match either a top-level catalog skill (e.g. `shadcn-ui`)
+# or a bundle-expanded sub-skill (e.g. `shadcn`, `frontend-design`).
+# Lines starting with `#` and blank lines are ignored.
+#
+# Maintain with:
+#   make ignore-skill   SKILL=<name>   # add + unlink now
+#   make unignore-skill SKILL=<name>   # remove; next `make link` will re-link
+superpowers
