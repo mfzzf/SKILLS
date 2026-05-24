@@ -115,6 +115,9 @@ def yaml_check(fm: str) -> list[str]:
             issues.append(f"missing required key `{required}`")
         elif not str(data.get(required, "")).strip():
             issues.append(f"`{required}` is empty")
+    desc = str(data.get("description", ""))
+    if len(desc) > 1024:
+        issues.append(f"`description` is {len(desc)} chars (Claude Code limit: 1024)")
     return issues
 
 
