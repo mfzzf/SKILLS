@@ -6,9 +6,11 @@ SKILL ?=
 URL   ?=
 MSG   ?=
 
-# Roots that consume skills. Override with `make link CLAUDE_ROOT=... CODEX_ROOT=...`.
+# Roots that consume skills. Override with `make link CLAUDE_ROOT=... CODEX_ROOT=... AGENTS_ROOT=...`.
 CLAUDE_ROOT ?= $(HOME)/.claude/skills
 CODEX_ROOT  ?= $(HOME)/.codex/skills
+AGENTS_ROOT ?= $(HOME)/.agents/skills
+ROOTS       := $(CLAUDE_ROOT) $(CODEX_ROOT) $(AGENTS_ROOT)
 
 # Catalog root (absolute) — used as symlink target so links survive `cd`.
 CATALOG := $(abspath .)
@@ -138,8 +140,8 @@ clean: ## Drop untracked junk inside submodules (does not touch tracked files)
 # into this catalog. Pulling/bumping in the catalog is instantly visible to
 # both Claude Code and Codex with no copy step.
 
-link: ## Symlink every catalog skill into ~/.claude/skills and ~/.codex/skills
-	@mkdir -p "$(CLAUDE_ROOT)" "$(CODEX_ROOT)"
+link: ## Symlink every catalog skill into ~/.claude/skills, ~/.codex/skills, ~/.agents/skills
+	@for r in $(ROOTS); do mkdir -p "$$r"; done
 	@for s in $(SKILLS); do \
 	  bundle_inner=""; \
 	  for pair in $(BUNDLES); do \
@@ -159,9 +161,9 @@ link: ## Symlink every catalog skill into ~/.claude/skills and ~/.codex/skills
 	@echo ""
 	@echo "Done. Verify with: make link-status"
 
-# Internal: link one TARGET as NAME into both roots, skipping conflicts.
+# Internal: link one TARGET as NAME into every root, skipping conflicts.
 _link_one:
-	@for root in "$(CLAUDE_ROOT)" "$(CODEX_ROOT)"; do \
+	@for root in $(ROOTS); do \
 	  dest="$$root/$(NAME)"; \
 	  if [ -L "$$dest" ]; then \
 	    cur=$$(readlink "$$dest"); \
@@ -179,8 +181,8 @@ _link_one:
 	  fi; \
 	done
 
-unlink: ## Remove symlinks this catalog created in both roots (keeps real dirs untouched)
-	@for root in "$(CLAUDE_ROOT)" "$(CODEX_ROOT)"; do \
+unlink: ## Remove symlinks this catalog created in all roots (keeps real dirs untouched)
+	@for root in $(ROOTS); do \
 	  [ -d "$$root" ] || continue; \
 	  for entry in "$$root"/*; do \
 	    [ -L "$$entry" ] || continue; \
@@ -191,8 +193,8 @@ unlink: ## Remove symlinks this catalog created in both roots (keeps real dirs u
 	  done; \
 	done
 
-link-status: ## Show what's linked in ~/.claude/skills and ~/.codex/skills
-	@for root in "$(CLAUDE_ROOT)" "$(CODEX_ROOT)"; do \
+link-status: ## Show what's linked in ~/.claude/skills, ~/.codex/skills, ~/.agents/skills
+	@for root in $(ROOTS); do \
 	  echo ""; \
 	  printf "\033[1m%s\033[0m\n" "$$root"; \
 	  [ -d "$$root" ] || { echo "  (does not exist)"; continue; }; \
