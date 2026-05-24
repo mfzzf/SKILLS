@@ -37,3 +37,6 @@
 [submodule "nextjs-docs"]
 	path = nextjs-docs
 	url = git@github.com:mfzzf/nextjs-docs.git
+[submodule "shadcn-ui"]
+	path = shadcn-ui
+	url = https://github.com/shadcn-ui/ui.git
