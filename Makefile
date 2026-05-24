@@ -1,4 +1,4 @@
-.PHONY: help init status sync bump bump-all add-skill remove-skill check push pull foreach clean link unlink link-status lint install-hooks
+.PHONY: help init status sync bump bump-all add-skill remove-skill check push pull foreach clean link unlink unlink-skill link-status lint install-hooks
 
 # -------- config --------
 SHELL := /bin/bash
@@ -192,6 +192,21 @@ unlink: ## Remove symlinks this catalog created in all roots (keeps real dirs un
 	    esac; \
 	  done; \
 	done
+
+unlink-skill: ## Remove symlinks pointing into one catalog skill (handles bundles). Usage: make unlink-skill SKILL=superpowers
+	@if [ -z "$(SKILL)" ]; then echo "usage: make unlink-skill SKILL=<name>" >&2; exit 2; fi
+	@n=0; for root in $(ROOTS); do \
+	  [ -d "$$root" ] || continue; \
+	  for entry in "$$root"/*; do \
+	    [ -L "$$entry" ] || continue; \
+	    target=$$(readlink "$$entry"); \
+	    case "$$target" in \
+	      "$(CATALOG)/$(SKILL)"|"$(CATALOG)/$(SKILL)/"*) \
+	        rm "$$entry" && echo "  - $$entry" && n=$$((n+1));; \
+	    esac; \
+	  done; \
+	done; \
+	echo "removed $$n symlink(s) for SKILL=$(SKILL)"
 
 link-status: ## Show what's linked in ~/.claude/skills, ~/.codex/skills, ~/.agents/skills
 	@for root in $(ROOTS); do \

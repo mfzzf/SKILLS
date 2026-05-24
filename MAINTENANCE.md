@@ -292,6 +292,15 @@ make unlink
 
 只删指向 catalog 的 symlink，不动其它东西（外部 link、真目录都安全）。三个根一起清。
 
+只想下掉**某一个** skill（包括 bundle 展开出来的所有子 skill）：
+
+```bash
+make unlink-skill SKILL=superpowers   # 清掉 superpowers/skills/* 在三个 root 里的全部 symlink
+make unlink-skill SKILL=nextjs-docs   # 单 skill 也能用
+```
+
+恢复就 `make link`。
+
 ### 自定义目标根
 
 默认 `CLAUDE_ROOT=~/.claude/skills`、`CODEX_ROOT=~/.codex/skills`、`AGENTS_ROOT=~/.agents/skills`。多环境（比如分离测试环境）可临时覆盖任意一个：
