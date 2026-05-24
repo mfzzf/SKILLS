@@ -7,3 +7,18 @@
 #   make ignore-skill   SKILL=<name>   # add + unlink now
 #   make unignore-skill SKILL=<name>   # remove; next `make link` will re-link
 superpowers
+algorithmic-art
+brand-guidelines
+canvas-design
+claude-api
+doc-coauthoring
+docx
+internal-comms
+mcp-builder
+pdf
+pptx
+slack-gif-creator
+theme-factory
+web-artifacts-builder
+webapp-testing
+xlsx
