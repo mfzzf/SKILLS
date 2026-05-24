@@ -206,6 +206,14 @@ Offline mirror of the **shadcn/ui documentation** (`ui.shadcn.com/llms.txt` inde
 
 ---
 
+### [nextjs-docs](./nextjs-docs) &nbsp;·&nbsp; [source](https://github.com/mfzzf/nextjs-docs)
+
+Offline mirror of the **Next.js 16.2.6 documentation** (`nextjs.org/docs/llms.txt` + nested `pages/llms.txt` → 406 raw markdown pages). Covers both App Router and Pages Router — Getting Started, every Guide (auth, forms, MDX, testing, OpenTelemetry, PWA, migrations, multi-zones, view transitions), full API Reference (every directive / component / file convention / function / `next.config.js` option / CLI / Adapter / Edge Runtime / Turbopack), Architecture, Community.
+
+**Triggers**: `next.config.js`, `app/`, `pages/`, `use server` / `use client` / `use cache`, Server Actions, RSC, ISR, PPR, `revalidateTag`, `generateMetadata`, `next/image`, `next/link`, `next/font`, `create-next-app`, Turbopack, Edge Runtime, `proxy.js`, `instrumentation.js`, "Next.js 16", "App Router", "Pages Router", "Next.js 文档".
+
+---
+
 ### Upstream — [anthropics/skills](./anthropics-skills) &nbsp;·&nbsp; [source](https://github.com/anthropics/skills)
 
 Anthropic's official skill collection, vendored as a submodule so we always have the canonical references at hand. The two we lean on most:
