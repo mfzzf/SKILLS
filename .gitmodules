@@ -40,3 +40,6 @@
 [submodule "shadcn-ui"]
 	path = shadcn-ui
 	url = https://github.com/shadcn-ui/ui.git
+[submodule "codebase-to-course"]
+	path = codebase-to-course
+	url = https://github.com/zarazhangrui/codebase-to-course.git
